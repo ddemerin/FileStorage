@@ -1,0 +1,139 @@
+﻿using System;
+
+namespace FileStorage
+{
+  class Program
+  {
+    static void Main(string[] args)
+    {
+
+      var tracker = new AccountTracker();
+      tracker.LoadData();
+    
+      var isRunning = true;
+      while (isRunning)
+      {
+      Console.Clear();
+      // Greet the user
+      Console.WriteLine("Welcome to First Bank of Suncoast Account Manager!");
+      // Menu for choosing an account to access, immediately shows your account balances
+      tracker.ViewAccounts();
+      Console.WriteLine("\nWhich account would you like to access?\n\n(CHECKING) or (SAVINGS)?\n\nOr would you like to (QUIT)?");
+      var which = Console.ReadLine().ToUpper();
+      if (which != "CHECKING" && which != "SAVINGS")
+      {
+        Console.WriteLine("That is not an account option.");
+        Console.WriteLine("\nWhich account would you like to access?\n\n(CHECKING) or (SAVINGS)?\n\nOr would you like to (QUIT)?");
+      }
+      // if == checking
+        // Sub-menu for whether depositing, withdrawing, or transferring between accounts
+      if (which == "CHECKING")
+      {
+        Console.Clear();
+        tracker.ViewOne(which);
+        Console.WriteLine($"\nWhat would you like to do?");
+        Console.WriteLine("\n(DEPOSIT), (WITHDRAW), or (TRANSFER)");
+        var input = Console.ReadLine().ToUpper();
+          if (input != "DEPOSIT" && input != "WITHDRAW" && input != "TRANSFER")
+          {
+            Console.WriteLine("That is not option for this account.");
+            Console.WriteLine("\n(DEPOSIT), (WITHDRAW), or (TRANSFER)");
+          }
+          else if (input == "DEPOSIT")
+          {
+          Console.Clear();
+          Console.WriteLine("\nHow much would you like to deposit?");
+          tracker.Deposit(which);
+          tracker.SaveData();
+          Console.WriteLine("\nPress Enter to return to main menu or would you like to (QUIT)?");
+          input = Console.ReadLine().ToUpper();
+          if ( input == "QUIT")
+            {
+              isRunning = false;
+            } 
+          }
+        // Withdraw
+          else if (input == "WITHDRAW")
+          {
+          Console.Clear();
+          Console.WriteLine("\nHow much would you like to withdraw?");
+          tracker.Withdraw(which);
+          tracker.SaveData();
+          Console.WriteLine("\nPress Enter to return to main menu or would you like to (QUIT)?");
+          input = Console.ReadLine().ToUpper();
+          if ( input == "QUIT")
+            {
+              isRunning = false;
+            } 
+          }
+          // Transfer
+          else if (input == "TRANSFER")
+          {
+            Console.Clear();
+            Console.WriteLine("\nHow much would you like to transfer to SAVINGS?");
+            tracker.TransferChecking(which);
+            tracker.ViewAccounts();
+            tracker.SaveData();
+            Console.WriteLine("\nPress Enter to return to main menu or would you like to (QUIT)?");
+            input = Console.ReadLine().ToUpper();
+            if ( input == "QUIT")
+              {
+                isRunning = false;
+              } 
+          }
+        }
+        // if == saving
+          // Sub-menu for whether depositing, withdrawing, or transferring between accounts
+        if (which == "SAVINGS")
+        {
+          Console.Clear();
+          tracker.ViewOne(which);
+          Console.WriteLine($"\nWhat would you like to do?");
+          Console.WriteLine("\n\n(DEPOSIT), (WITHDRAW), or (TRANSFER)");
+          var input = Console.ReadLine().ToUpper();
+          if (input != "DEPOSIT" && input != "WITHDRAW" && input != "TRANSFER")
+          {
+            Console.WriteLine("That is not option for this account.");
+            Console.WriteLine("\n\n(DEPOSIT), (WITHDRAW), or (TRANSFER)");
+          }
+          // Deposit
+          else if (input == "DEPOSIT")
+          {
+            Console.Clear();
+            Console.WriteLine("\nHow much would you like to deposit?");
+            tracker.Deposit(which);
+            tracker.SaveData();
+            Console.WriteLine("\nPress Enter to return to main menu or would you like to (QUIT)?");
+            input = Console.ReadLine().ToUpper();
+            if ( input == "QUIT")
+              {
+                isRunning = false;
+              } 
+          }
+          else if (input == "TRANSFER")
+          {
+          Console.Clear();
+          Console.WriteLine("\nHow much would you like to transfer to CHECKING?");
+          tracker.TransferSavings(which);
+          tracker.ViewAccounts();
+          tracker.SaveData();
+          Console.WriteLine("\nPress Enter to return to main menu or would you like to (QUIT)?");
+          input = Console.ReadLine().ToUpper();
+          if ( input == "QUIT")
+            {
+              isRunning = false;
+            } 
+          // Depositing, withdrawing, or transferring auto-saves
+        // Ability to quit and save any changes made
+          }
+        }
+        if ( which == "QUIT")
+        {
+          tracker.SaveData();
+          isRunning = false;
+        } 
+      }
+    }
+  }
+}
+
