@@ -135,6 +135,15 @@ namespace FileStorage
             Console.WriteLine("\nPress Enter to return to main menu or would you like to (QUIT)?");
             input = Console.ReadLine().ToUpper();
           }
+          // Withdraw
+          else if (input == "WITHDRAW")
+          {
+          Console.Clear();
+          Console.WriteLine("\nHow much would you like to withdraw?");
+          tracker.Withdraw(which, userName);
+          Console.WriteLine("\nPress Enter to return to main menu or would you like to (QUIT)?");
+          input = Console.ReadLine().ToUpper();
+          }
           else if (input == "TRANSFER")
           {
           Console.Clear();

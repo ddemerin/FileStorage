@@ -96,6 +96,11 @@ namespace FileStorage
         public void Deposit(string which, string userName)
         {
             var add = int.Parse(Console.ReadLine());
+            if (add !> 0)
+            {
+                Console.WriteLine("You must enter an amount you'd like to deposit.");
+                add = int.Parse(Console.ReadLine());
+            }
             var signedIn = Accounts.Where(account => account.UserName == userName);
             var deposit = signedIn.First(Account => Account.Name == which).Amount;
             deposit += add;
@@ -108,6 +113,11 @@ namespace FileStorage
         public void Withdraw(string which, string userName)
         {
             var remove = int.Parse(Console.ReadLine());
+            // if (remove == )
+            // {
+            //     Console.WriteLine("You must enter an amount you'd like to withdraw.");
+            //     remove = int.Parse(Console.ReadLine());
+            // }
             var signedIn = Accounts.Where(account => account.UserName == userName);
             var withdraw = signedIn.First(Account => Account.Name == which).Amount;
             withdraw -= remove;
@@ -120,6 +130,11 @@ namespace FileStorage
         public void TransferChecking(string which, string userName)
         {
             var transfer = int.Parse(Console.ReadLine());
+            // if (transfer !> 0)
+            // {
+            //     Console.WriteLine("You must enter an amount you'd like to transfer.");
+            //     transfer = int.Parse(Console.ReadLine());
+            // }
             var signedIn = Accounts.Where(account => account.UserName == userName);
             var fromAccount = signedIn.First(Account => Account.Name == which).Amount;
             var toAccount = signedIn.First(Account => Account.Name == "SAVINGS").Amount;
