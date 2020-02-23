@@ -32,66 +32,116 @@ namespace FileStorage
                 }
         } 
 
-        // method for viewing accounts
-        public void ViewAccounts()
+        // method for adding users
+        public void AddNewAccount(string userName, int checkingAmount, int savingsAmount)
         {
-        foreach (var account in Accounts)
+            var checkingAccount = new Account()
+            {
+                UserName = userName,
+                Name = "CHECKING",
+                Amount = checkingAmount
+            };
+            var savingsAccount = new Account()
+            {
+                UserName = userName,
+                Name = "SAVINGS",
+                Amount = savingsAmount
+            };
+            Accounts.Add(checkingAccount);
+            Accounts.Add(savingsAccount);
+            SaveData();
+        }
+
+        public void CheckSignup(string userName)
+        {
+            var checkUser = Accounts.Any(account => account.UserName == userName);
+            if (checkUser == true)
+            {
+                Console.WriteLine("That username already exists. Please choose another one.");
+                userName = Console.ReadLine().ToUpper();
+            }
+        }
+        public void CheckLogin(string userName)
+        {
+            var login = new Program();
+            var checkUser = Accounts.Any(account => account.UserName == userName);
+            if (checkUser == false)
+            {
+                Console.WriteLine("That username doesn't not exist. Try again.");
+                userName = Console.ReadLine().ToUpper();
+            }
+        }
+
+        // method for viewing accounts
+        public void ViewAccounts(string userName)
+        {
+            var signedIn = Accounts.Where(account => account.UserName == userName);
+            foreach (var account in signedIn)
             {
             Console.WriteLine($"\n{account.Name}: ${account.Amount}");
             }
-            var total = Accounts.Sum(sum => sum.Amount);
+            var total = signedIn.Sum(sum => sum.Amount);
             Console.WriteLine($"\nTOTAL BALANCE: ${total}");
         }
 
         // method for view single account
-        public void ViewOne(string which)
-        {
-        var account = Accounts.First(account => account.Name == which).Amount;
-        Console.WriteLine($"\nYour {which} account has a balance of ${account}.");
+        public void ViewOne(string which, string userName)
+        {   
+            var signedIn = Accounts.Where(account => account.UserName == userName);
+            var account = signedIn.First(account => account.Name == which).Amount;
+            Console.WriteLine($"\nYour {which} account has a balance of ${account}.");
         }
 
         // method deposit
-        public void Deposit(string which)
+        public void Deposit(string which, string userName)
         {
             var add = int.Parse(Console.ReadLine());
-            var deposit = Accounts.First(Account => Account.Name == which).Amount;
+            var signedIn = Accounts.Where(account => account.UserName == userName);
+            var deposit = signedIn.First(Account => Account.Name == which).Amount;
             deposit += add;
             Console.WriteLine($"\nYour checking account has a balance of ${deposit}.");
             Accounts.First(Account => Account.Name == which).Amount = deposit;
+            SaveData();
         }
 
         // method withdraw from account
-        public void Withdraw(string which)
+        public void Withdraw(string which, string userName)
         {
             var remove = int.Parse(Console.ReadLine());
-            var withdraw = Accounts.First(Account => Account.Name == which).Amount;
+            var signedIn = Accounts.Where(account => account.UserName == userName);
+            var withdraw = signedIn.First(Account => Account.Name == which).Amount;
             withdraw -= remove;
             Console.WriteLine($"\nYour checking account has a balance of ${withdraw}.");
             Accounts.First(Account => Account.Name == which).Amount = withdraw;
+            SaveData();
         }
 
         // method transfer to checking
-        public void TransferChecking(string which)
+        public void TransferChecking(string which, string userName)
         {
             var transfer = int.Parse(Console.ReadLine());
-            var fromAccount = Accounts.First(Account => Account.Name == which).Amount;
-            var toAccount = Accounts.First(Account => Account.Name == "SAVINGS").Amount;
+            var signedIn = Accounts.Where(account => account.UserName == userName);
+            var fromAccount = signedIn.First(Account => Account.Name == which).Amount;
+            var toAccount = signedIn.First(Account => Account.Name == "SAVINGS").Amount;
             fromAccount = fromAccount - transfer;
             Accounts.First(Account => Account.Name == "CHECKING").Amount = fromAccount;
             toAccount = toAccount + transfer;
             Accounts.First(Account => Account.Name == "SAVINGS").Amount = toAccount;
+            SaveData();
         }
         
        // method transfer to savings
-        public void TransferSavings(string which)
+        public void TransferSavings(string which, string userName)
         {
             var transfer = int.Parse(Console.ReadLine());
-            var fromAccount = Accounts.First(Account => Account.Name == which).Amount;
-            var toAccount = Accounts.First(Account => Account.Name == "CHECKING").Amount;
+            var signedIn = Accounts.Where(account => account.UserName == userName);
+            var fromAccount = signedIn.First(Account => Account.Name == which).Amount;
+            var toAccount = signedIn.First(Account => Account.Name == "CHECKING").Amount;
             fromAccount = fromAccount - transfer;
             Accounts.First(Account => Account.Name == "SAVINGS").Amount = fromAccount;
             toAccount = toAccount + transfer;
             Accounts.First(Account => Account.Name == "CHECKING").Amount = toAccount;
+            SaveData();
         }
     }
 }
