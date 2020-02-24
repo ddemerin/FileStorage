@@ -8,7 +8,9 @@ namespace FileStorage
     {
 
       var tracker = new AccountTracker();
+      var password = "";
       var userName = "";
+      var input = "";
       tracker.LoadData();
 
       var isRunning = true;
@@ -21,12 +23,14 @@ namespace FileStorage
       Console.WriteLine("Welcome to First Bank of Suncoast Account Manager!");
         // Login or sign up
       Console.WriteLine("(LOGIN) or (SIGNUP)?");
-      var input = Console.ReadLine().ToUpper();
+      input = Console.ReadLine().ToUpper();
       if (input == "LOGIN")
       {
         Console.WriteLine("What is your username?");
         userName = Console.ReadLine().ToUpper();
-        tracker.CheckLogin(userName);
+        userName = tracker.CheckLogin(userName);
+        Console.Write($"What is your password?");
+        tracker.CheckPassword(userName, password);
         login = false;
         isRunning = true;
       }
@@ -35,12 +39,14 @@ namespace FileStorage
       {
         Console.WriteLine("What username would you like to use?");
         userName = Console.ReadLine().ToUpper();
-        tracker.CheckSignup(userName);
-        Console.WriteLine("How much would you like to deposit into your CHECKING account?");
+        userName = tracker.CheckSignup(userName);
+        Console.WriteLine("\nCreate a password");
+        password = Console.ReadLine();
+        Console.WriteLine("\nHow much would you like to deposit into your CHECKING account?");
         var checkingAmount = int.Parse(Console.ReadLine());
-        Console.WriteLine("How much would you like to deposit into your SAVINGS account?");
+        Console.WriteLine("\nHow much would you like to deposit into your SAVINGS account?");
         var savingsAmount = int.Parse(Console.ReadLine());
-        tracker.AddNewAccount(userName, checkingAmount, savingsAmount);
+        tracker.AddNewAccount(userName, password, checkingAmount, savingsAmount);
         login = false;
         isRunning = true;
       }
@@ -66,13 +72,14 @@ namespace FileStorage
       }
       // if == checking
         // Sub-menu for whether depositing, withdrawing, or transferring between accounts
+      
       if (which == "CHECKING")
       {
         Console.Clear();
         tracker.ViewOne(which, userName);
         Console.WriteLine($"\nWhat would you like to do?");
         Console.WriteLine("\n(DEPOSIT), (WITHDRAW), or (TRANSFER)");
-        var input = Console.ReadLine().ToUpper();
+        input = Console.ReadLine().ToUpper();
           if (input != "DEPOSIT" && input != "WITHDRAW" && input != "TRANSFER" && input != "QUIT")
           {
             Console.WriteLine("That is not option for this account.");
@@ -85,10 +92,6 @@ namespace FileStorage
           tracker.Deposit(which, userName);
           Console.WriteLine("\nPress Enter to return to main menu or would you like to (QUIT)?");
           input = Console.ReadLine().ToUpper();
-          if ( input == "QUIT")
-            {
-              isRunning = false;
-            } 
           }
         // Withdraw
           else if (input == "WITHDRAW")
@@ -106,7 +109,6 @@ namespace FileStorage
             Console.WriteLine("\nHow much would you like to transfer to SAVINGS?");
             tracker.TransferChecking(which, userName);
             tracker.ViewAccounts(userName);
-
             Console.WriteLine("\nPress Enter to return to main menu or would you like to (QUIT)?");
             input = Console.ReadLine().ToUpper();
           }
@@ -119,7 +121,7 @@ namespace FileStorage
           tracker.ViewOne(which, userName);
           Console.WriteLine($"\nWhat would you like to do?");
           Console.WriteLine("\n\n(DEPOSIT), (WITHDRAW), or (TRANSFER)");
-          var input = Console.ReadLine().ToUpper();
+          input = Console.ReadLine().ToUpper();
           if (input != "DEPOSIT" && input != "WITHDRAW" && input != "TRANSFER" && input != "QUIT")
           {
             Console.WriteLine("That is not option for this account.");
@@ -131,7 +133,6 @@ namespace FileStorage
             Console.Clear();
             Console.WriteLine("\nHow much would you like to deposit?");
             tracker.Deposit(which, userName);
-
             Console.WriteLine("\nPress Enter to return to main menu or would you like to (QUIT)?");
             input = Console.ReadLine().ToUpper();
           }
@@ -156,7 +157,7 @@ namespace FileStorage
         // Ability to quit and save any changes made
           }
         }
-        if ( which == "QUIT")
+        if ( which == "QUIT" || input == "QUIT")
         {
           tracker.SaveData();
           isRunning = false;

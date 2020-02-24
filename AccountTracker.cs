@@ -14,9 +14,13 @@ namespace FileStorage
         // method for loading data
         public void LoadData()
         {
+        // "using" statement fixes c# bug that doesn't allow saves while StreamReader\CsvReader is still open
+            // calls StreamReader to look into accounts for load
             using (var reader = new StreamReader("accounts.csv"))
+            // calls CsvReader to eliminate special characters when reading from .csv file
             using (var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture))
             {    
+                // applies the records in .csv file to Account List.
                 Accounts = csvReader.GetRecords<Account>().ToList();
             }
         }
@@ -24,7 +28,10 @@ namespace FileStorage
         // method for saving data
         public void SaveData()
         {
+        // "using" statement fixes c# bug that doesn't allow saves while StreamReader\CsvReader is still open
+            // calls StreamReader to look into accounts for save   
             using (var writer = new StreamWriter("accounts.csv"))
+            // calls CsvReader to eliminate special characters when reading from .csv file
             using (var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture))
             {
                 csvWriter.WriteRecords(Accounts);
@@ -33,17 +40,19 @@ namespace FileStorage
         } 
 
         // method for adding users
-        public void AddNewAccount(string userName, int checkingAmount, int savingsAmount)
+        public void AddNewAccount(string userName, string password, int checkingAmount, int savingsAmount)
         {
             var checkingAccount = new Account()
             {
                 UserName = userName,
+                Password = password,
                 Name = "CHECKING",
                 Amount = checkingAmount
             };
             var savingsAccount = new Account()
             {
                 UserName = userName,
+                Password = password,
                 Name = "SAVINGS",
                 Amount = savingsAmount
             };
@@ -52,7 +61,7 @@ namespace FileStorage
             SaveData();
         }
 
-        public void CheckSignup(string userName)
+        public string CheckSignup(string userName)
         {
             var checkUser = Accounts.Any(account => account.UserName == userName);
             if (checkUser == true)
@@ -60,15 +69,47 @@ namespace FileStorage
                 Console.WriteLine("That username already exists. Please choose another one.");
                 userName = Console.ReadLine().ToUpper();
             }
+            return userName;
         }
-        public void CheckLogin(string userName)
+        public string CheckLogin(string userName)
+        {
+            var loginCheck = true;
+            var login = new Program();
+            
+            while (loginCheck)
+            {
+            var checkUser = Accounts.Any(account => account.UserName == userName);
+            if (checkUser == true)
+            {
+                Console.WriteLine($"\nWelcome {userName}!\n");
+                loginCheck = false;
+            }
+            else
+            {
+                Console.WriteLine("\nThat username doesn't not exist. Try again.");
+                userName = Console.ReadLine().ToUpper();
+            }
+            }
+            return userName;
+        }
+        public void CheckPassword(string userName, string password)
         {
             var login = new Program();
-            var checkUser = Accounts.Any(account => account.UserName == userName);
-            if (checkUser == false)
+            var loggingIn = true;
+            while (loggingIn)
             {
-                Console.WriteLine("That username doesn't not exist. Try again.");
-                userName = Console.ReadLine().ToUpper();
+            password = Console.ReadLine();
+            var checkUser = Accounts.First(account => account.UserName == userName).UserName; 
+            var correctPass = Accounts.First(account => account.Password == password).Password;
+            if (password == correctPass && userName == checkUser)
+            {
+                loggingIn = false;
+            }
+            else
+            {
+                Console.WriteLine("\nThat is not the correct password. Try again.");
+                password = Console.ReadLine();
+            }
             }
         }
 
@@ -96,11 +137,6 @@ namespace FileStorage
         public void Deposit(string which, string userName)
         {
             var add = int.Parse(Console.ReadLine());
-            if (add !> 0)
-            {
-                Console.WriteLine("You must enter an amount you'd like to deposit.");
-                add = int.Parse(Console.ReadLine());
-            }
             var signedIn = Accounts.Where(account => account.UserName == userName);
             var deposit = signedIn.First(Account => Account.Name == which).Amount;
             deposit += add;
@@ -113,11 +149,6 @@ namespace FileStorage
         public void Withdraw(string which, string userName)
         {
             var remove = int.Parse(Console.ReadLine());
-            // if (remove == )
-            // {
-            //     Console.WriteLine("You must enter an amount you'd like to withdraw.");
-            //     remove = int.Parse(Console.ReadLine());
-            // }
             var signedIn = Accounts.Where(account => account.UserName == userName);
             var withdraw = signedIn.First(Account => Account.Name == which).Amount;
             withdraw -= remove;
@@ -130,11 +161,6 @@ namespace FileStorage
         public void TransferChecking(string which, string userName)
         {
             var transfer = int.Parse(Console.ReadLine());
-            // if (transfer !> 0)
-            // {
-            //     Console.WriteLine("You must enter an amount you'd like to transfer.");
-            //     transfer = int.Parse(Console.ReadLine());
-            // }
             var signedIn = Accounts.Where(account => account.UserName == userName);
             var fromAccount = signedIn.First(Account => Account.Name == which).Amount;
             var toAccount = signedIn.First(Account => Account.Name == "SAVINGS").Amount;
